@@ -17,24 +17,15 @@ public class TestDbService {
 		String db = "jdbc:hsqldb:file:local-db\\access";
         String user = "sa";
         String password = "";
-        
-        try {
-            Class.forName("org.hsqldb.jdbc.JDBCDriver" );
-        } catch (Exception e) {
-            System.err.println("ERROR: failed to load HSQLDB JDBC driver.");
-            e.printStackTrace();
-            return;
-        }
                 
-        System.out.println("BEFORE CONNECTION");
-        
         try {
             conn = DriverManager.getConnection(db, user, password);
              
             // Create and execute statement
             Statement stmt = conn.createStatement();
-//            ResultSet rs =  stmt.executeQuery("select FIRSTNAME, LASTNAME from PUBLIC.CUSTOMER");
-            ResultSet rs =  stmt.executeQuery("select FIRSTNAME, LASTNAME from PUBLIC.PUBLIC.CUSTOMER");
+            ResultSet rs =  stmt.executeQuery("select FIRSTNAME, LASTNAME from CUSTOMER");
+            //ResultSet rs =  stmt.executeQuery("select FIRSTNAME, LASTNAME from PUBLIC.CUSTOMER");
+            //ResultSet rs =  stmt.executeQuery("select FIRSTNAME, LASTNAME from PUBLIC.PUBLIC.CUSTOMER");
              
             // Loop through the data and print all artist names
             while(rs.next()) {
