@@ -5,6 +5,7 @@ public class Doctor {
 	private long id;
 	private String firstName;
 	private String lastName;
+	private String patronymic;
 	private String specialization;
 	
 	public long getId() {
@@ -30,6 +31,12 @@ public class Doctor {
 	}
 	public void setSpecialization(String specialization) {
 		this.specialization = specialization;
+	}
+	public String getPatronymic() {
+		return patronymic;
+	}
+	public void setPatronymic(String patronymic) {
+		this.patronymic = patronymic;
 	}
 	
 	@Override

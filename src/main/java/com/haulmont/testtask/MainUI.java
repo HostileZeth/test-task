@@ -1,6 +1,6 @@
 package com.haulmont.testtask;
 
-import com.haulmont.testtask.service.DbService;
+import com.haulmont.testtask.service.TestDbService;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Label;
@@ -21,10 +21,10 @@ public class MainUI extends UI {
         layout.addComponent(new Label("Main UI"));
         layout.addComponent(new Label("I like adding captions"));
         
-        DbService ndb = new DbService();
+        TestDbService ndb = new TestDbService();
         
         
-        ndb.bullshit();
+        ndb.testDbAccess();
         
         
 

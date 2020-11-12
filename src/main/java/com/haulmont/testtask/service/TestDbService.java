@@ -6,14 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DbService {
+public class TestDbService {
 
-	public void bullshit()
+	public void testDbAccess()
 	{
 		Connection conn = null;
-		
-        String db = "jdbc:hsqldb:file:D:/EclipseWorkspace/Haulmont test-task/local-db/access";
-        String user = "SA";
+		//jdbc:hsqldb:D:\EclipseWorkspace\Haulmont test-task\test-task\local-db\access
+		//it works
+        //String db = "jdbc:hsqldb:file:D:\\EclipseWorkspace\\Haulmont test-task\\test-task\\local-db\\access";
+		String db = "jdbc:hsqldb:file:local-db\\access";
+        String user = "sa";
         String password = "";
         
         try {
@@ -31,7 +33,8 @@ public class DbService {
              
             // Create and execute statement
             Statement stmt = conn.createStatement();
-            ResultSet rs =  stmt.executeQuery("select FIRSTNAME, LASTNAME from PUBLIC.CUSTOMER");
+//            ResultSet rs =  stmt.executeQuery("select FIRSTNAME, LASTNAME from PUBLIC.CUSTOMER");
+            ResultSet rs =  stmt.executeQuery("select FIRSTNAME, LASTNAME from PUBLIC.PUBLIC.CUSTOMER");
              
             // Loop through the data and print all artist names
             while(rs.next()) {
