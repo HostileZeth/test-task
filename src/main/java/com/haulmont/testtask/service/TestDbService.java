@@ -5,8 +5,59 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.haulmont.testtask.entity.Patient;
+
+
 
 public class TestDbService {
+	
+	private String db = "jdbc:hsqldb:file:local-db/access";
+	private String user = "sa";
+	private String password = "";
+	
+	private String[] patientProps = {"id", "first_name", "last_name", "patronymic", "phone_number"};
+	
+	private Connection getConnection() throws SQLException
+	{
+		return DriverManager.getConnection(db, user, password);
+	}
+	
+	public List<Patient> getPatientList()
+	{
+    	ArrayList<Patient> resultList = new ArrayList<>();
+    	   	
+    	Connection conn = null;
+    	
+    	try {
+			conn = getConnection();
+			
+			Statement statement = conn.createStatement();
+			ResultSet resultSet = statement.executeQuery("SELECT id, first_name, last_name, patronymic, phone_number FROM patient");
+			
+			while (resultSet.next())
+			{
+				System.out.println("READING " + resultSet.getString("first_name") + resultSet.getString("last_name"));
+				
+				resultList.add(
+						new Patient(resultSet.getLong("id"),
+							resultSet.getString("first_name"),
+							resultSet.getString("last_name"),
+							resultSet.getString("patronymic"),
+							resultSet.getString("phone_number")));
+			}
+			
+		} catch (SQLException e) {
+			System.err.println("Failed to retrieve patients list");
+			e.printStackTrace();
+		}
+    	
+    	System.out.println(resultList);
+    	
+    	return resultList;
+	}
 
 	public void testDbAccess()
 	{
@@ -14,12 +65,10 @@ public class TestDbService {
 		//jdbc:hsqldb:D:\EclipseWorkspace\Haulmont test-task\test-task\local-db\access
 		//it works
         //String db = "jdbc:hsqldb:file:D:\\EclipseWorkspace\\Haulmont test-task\\test-task\\local-db\\access";
-		String db = "jdbc:hsqldb:file:local-db\\access";
-        String user = "sa";
-        String password = "";
+		
                 
         try {
-            conn = DriverManager.getConnection(db, user, password);
+            conn = getConnection();
              
             // Create and execute statement
             Statement stmt = conn.createStatement();
