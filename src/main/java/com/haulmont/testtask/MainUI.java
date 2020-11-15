@@ -16,6 +16,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -27,40 +28,37 @@ public class MainUI extends UI {
 	private String WIDTH_PERCENTAGE = "80%";
 	private String GRID_HEIGHT_PERCENTAGE = "90%";
 	
+	//db service
+	private TestDbService testDbService = new TestDbService();
+	
 	//components
 	private Label headerCaption;
 
-	//db service
-	private TestDbService testDbService = new TestDbService();
+	//layout
+	protected VerticalLayout mainLayout;
+	
+	//switchable grids tab
+	protected TabSheet gridTabSheet;
+	
+	//grids + layouts
+	protected VerticalLayout patientLayout;
+	protected Grid<Patient> patientGrid;
+	
+	protected VerticalLayout prescriptionLayout;
+	protected Grid<Prescription> prescriptionGrid;
+	protected HorizontalLayout filterLayout;
+	protected Label searchCaption;
+	protected TextField filterPrescriptionTextField;
+	
+	protected VerticalLayout doctorLayout;
+	protected Grid<Doctor> doctorGrid;
+	
+	
 
     @Override
     protected void init(VaadinRequest request) {
     	
-
-    	
-    	//layout
-    	VerticalLayout mainLayout;
-    	HorizontalLayout buttonLayout;
-    	
-    	//CRUD buttons
-    	Button createButton;
-    	Button updateButton;
-    	Button deleteButton;
-    	
-    	//tabs
-    	TabSheet mainTabSheet;
-    	
     	//switchable tab content
-    	Grid<Patient> patientGrid;
-    	
-    	Grid<Prescription> prescriptionGrid;
-    	Label searchCaption;
-    	TextField filterPrescriptionTextField;
-    	
-    	Grid<Doctor> doctorGrid;
-    	
-    	mainTabSheet = new TabSheet();
-    	        
     	mainLayout = new VerticalLayout();
         mainLayout.setSizeFull();
         mainLayout.setMargin(true);
@@ -70,50 +68,58 @@ public class MainUI extends UI {
         mainLayout.addComponent(headerCaption);
         mainLayout.setComponentAlignment(headerCaption, Alignment.TOP_CENTER);
         
-        TabSheet gridTabSheet = new TabSheet();
+        
+        gridTabSheet = new TabSheet();
         gridTabSheet.setWidth(WIDTH_PERCENTAGE);
         gridTabSheet.setHeight(GRID_HEIGHT_PERCENTAGE);
         mainLayout.addComponent(gridTabSheet);
         mainLayout.setComponentAlignment(gridTabSheet, Alignment.MIDDLE_CENTER);
         mainLayout.setExpandRatio(gridTabSheet, 1.0f);
         
+        createPatientGrid();
+        patientLayout = generateTabGridLayout(patientGrid);
+        gridTabSheet.addTab(patientLayout, "Пациент").setId("Patient");
         
-        patientGrid = new Grid<Patient>(Patient.class);
-        patientGrid.setColumnOrder("id", "firstName", "lastName", "patronymic", "phoneNumber");
-        VerticalLayout patientLayout = generateTabGridLayout(patientGrid);
-        gridTabSheet.addTab(patientLayout, "Пациент");
-
-        prescriptionGrid = new Grid<Prescription>();
-        prescriptionGrid.addColumn(thePrescription -> thePrescription.getDoctor().getFirstName() + thePrescription.getDoctor().getLastName());
-        prescriptionGrid.addColumn(thePrescription -> thePrescription.getId()).setCaption("Id").setId("prescription_id");
-        prescriptionGrid.addColumn(thePrescription -> thePrescription.getDoctor().getId() + "#" + thePrescription.getDoctor().getFirstName() + thePrescription.getDoctor().getLastName() + thePrescription.getDoctor().getPatronymic())
-        					.setCaption("Врач").setId("doctor");
-        prescriptionGrid.addColumn(thePrescription -> thePrescription.getPatient().getId() + "#" + thePrescription.getPatient().getFirstName() + thePrescription.getPatient().getLastName() + thePrescription.getPatient().getPatronymic())
-		.setCaption("Пациент").setId("patient");
-        prescriptionGrid.addColumn(thePrescription -> thePrescription.getDate()).setCaption("Дата").setId("date");
-        prescriptionGrid.addColumn(thePrescription -> thePrescription.getDuration()).setCaption("Срок").setId("duration");
-        prescriptionGrid.addColumn(thePrescription -> thePrescription.getDescription()).setCaption("Описание").setId("description");
-        prescriptionGrid.addColumn(thePrescription -> thePrescription.getPriority()).setCaption("Приоритет").setId("priority");
-        
-        HorizontalLayout filterLayout = new HorizontalLayout();
+        createPrescriptionGrid();
+        filterLayout = new HorizontalLayout();
         searchCaption = new Label(); searchCaption.setCaption("Поиск по описанию:");
         filterPrescriptionTextField = new TextField();
         filterPrescriptionTextField.setValueChangeMode(ValueChangeMode.EAGER);
+        filterPrescriptionTextField.setPlaceholder("Фильтр по описанию...");
+        filterPrescriptionTextField.addValueChangeListener(e -> updateFilteredPrescriptionGrid(e.getValue()));
+        
+        filterLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         filterLayout.addComponent(searchCaption);
         filterLayout.addComponent(filterPrescriptionTextField);        
         
-        //prescriptionGrid.setColumnOrder("id", "doctor", "patient", "date", "duration", "description", "priority");
-        VerticalLayout prescriptionLayout = generateTabGridLayout(prescriptionGrid);
-        prescriptionLayout.addComponent(filterLayout);        
+        prescriptionLayout = generateTabGridLayout(prescriptionGrid);
+        prescriptionLayout.addComponent(filterLayout);       
+        prescriptionLayout.setComponentAlignment(filterLayout, Alignment.MIDDLE_CENTER);
         
-        gridTabSheet.addTab(prescriptionLayout, "Рецепт");
+        gridTabSheet.addTab(prescriptionLayout, "Рецепт").setId("Prescription");
         
-        doctorGrid = new Grid<Doctor>(Doctor.class);
-        doctorGrid.setColumnOrder("id", "firstName", "lastName", "patronymic", "specialization");
-        VerticalLayout doctorLayout = generateTabGridLayout(doctorGrid);
-        gridTabSheet.addTab(doctorLayout, "Врач");
+        createDoctorGrid();
+        doctorLayout = generateTabGridLayout(doctorGrid);
+        gridTabSheet.addTab(doctorLayout, "Врач").setId("Doctor");
         
-        buttonLayout = new HorizontalLayout();
+        createButtonLayout();
+        updateGrid(patientGrid, testDbService.getPatientList());
+
+        gridTabSheet.addSelectedTabChangeListener(new TabSheetGridUpdater());
+        
+        setContent(mainLayout);
+    }
+
+
+
+
+
+	private void createButtonLayout() {
+		HorizontalLayout buttonLayout;
+		Button createButton;
+		Button updateButton;
+		Button deleteButton;
+		buttonLayout = new HorizontalLayout();
         buttonLayout.setWidth(WIDTH_PERCENTAGE);
         mainLayout.addComponent(buttonLayout);
         mainLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_CENTER);
@@ -134,19 +140,43 @@ public class MainUI extends UI {
         deleteButton.addClickListener(new DeleteButtonClickListener());
         buttonLayout.addComponent(deleteButton);
         buttonLayout.setComponentAlignment(deleteButton, Alignment.TOP_CENTER);
-        
-        updatePatientGrid(patientGrid, testDbService.getPatientList());
-        
-        //setContent(mainLayout);
-        mainTabSheet.addTab(mainLayout, "Patients");
-        
-        gridTabSheet.setSelectedTab(2); // duct taped
-        
-        setContent(mainTabSheet);
-    }
+	}
 
+
+	private void createPrescriptionGrid() {
+		prescriptionGrid = new Grid<Prescription>();
+        prescriptionGrid.addColumn(Prescription::getId).setCaption("Id").setId("prescription_id");
+        prescriptionGrid.addColumn(thePrescription -> thePrescription.getDoctor().getId() + "#" + thePrescription.getDoctor().getLastName() + thePrescription.getDoctor().getFirstName() + thePrescription.getDoctor().getPatronymic())
+        					.setCaption("Врач").setId("doctor");
+        prescriptionGrid.addColumn(thePrescription -> thePrescription.getPatient().getId() + "#" + thePrescription.getPatient().getLastName() + thePrescription.getPatient().getFirstName() + thePrescription.getPatient().getPatronymic())
+		.setCaption("Пациент").setId("patient");
+        prescriptionGrid.addColumn(Prescription::getDate).setCaption("Дата").setId("date");
+        prescriptionGrid.addColumn(Prescription::getExpirationDate).setCaption("Срок").setId("duration");
+        prescriptionGrid.addColumn(Prescription::getDescription).setCaption("Описание").setId("description");
+        prescriptionGrid.addColumn(Prescription::getPriority).setCaption("Приоритет").setId("priority");
+	}
+
+
+	private void createPatientGrid() {
+		patientGrid = new Grid<Patient>();
+        patientGrid.addColumn(Patient::getId).setCaption("Id").setId("id");
+        patientGrid.addColumn(Patient::getLastName).setCaption("Фамилия").setId("lastName");
+        patientGrid.addColumn(Patient::getFirstName).setCaption("Имя").setId("firstName");
+        patientGrid.addColumn(Patient::getPatronymic).setCaption("Отчество").setId("patronymic");
+        patientGrid.addColumn(Patient::getPhoneNumber).setCaption("Номер телефона").setId("phoneNumber");
+	}
+	
+	private void createDoctorGrid() {
+		doctorGrid = new Grid<Doctor>();
+        doctorGrid.addColumn(Doctor::getId).setCaption("Id").setId("id");
+        doctorGrid.addColumn(Doctor::getLastName).setCaption("Фамилия").setId("lastName");
+        doctorGrid.addColumn(Doctor::getFirstName).setCaption("Имя").setId("firstName");
+        doctorGrid.addColumn(Doctor::getPatronymic).setCaption("Отчество").setId("patronymic");
+        doctorGrid.addColumn(Doctor::getSpecialization).setCaption("Специализация").setId("specialization");
+	}
 
 	private VerticalLayout generateTabGridLayout(Grid<?> someGrid) {
+		
 		someGrid.setWidth(WIDTH_PERCENTAGE);
         
         VerticalLayout someLayout = new VerticalLayout();
@@ -157,14 +187,55 @@ public class MainUI extends UI {
 	}
     
 
-    protected void updatePatientGrid(Grid<Patient> grid, List<Patient> list)
+    protected <T> void updateGrid(Grid<T> grid, List<T> list)
     {
     	System.out.println(list);
-    	System.out.println(list.size());
-    	
+    	if (list.size() == 0) System.out.println("! > > > Zero items for updating, its weird");
     	grid.setItems(list);
     }
     
+    protected void updateFilteredPrescriptionGrid(String filter) {
+    	prescriptionGrid.setItems(testDbService.getFilteredPrescriptionList(filter));
+        //grid.setItems(service.findAll(filterText.getValue()));
+    }
+    
+    protected void refreshCurrentTab() {
+
+		String tabId = gridTabSheet.getTab(gridTabSheet.getSelectedTab()).getId();
+    	
+		switch (tabId) {
+		
+		case "Patient":
+			//doctorGrid = null;
+			//doctorLayout = null;
+			/*createPatientGrid();
+	        patientLayout = generateTabGridLayout(patientGrid);*/
+			List<Patient> patientList = testDbService.getPatientList();
+			updateGrid(patientGrid, patientList);
+			break;
+		case "Prescription":
+			//patientLayout = null;
+			//patientGrid = null;
+			//doctorLayout = null;
+			//doctorGrid = null;
+			List<Prescription> prescriptionList = testDbService.getPrescriptionList();
+			updateGrid(prescriptionGrid, prescriptionList);
+			break;
+		case "Doctor":
+			/*patientLayout = null;
+			patientGrid = null;
+			createDoctorGrid();
+	        doctorLayout = generateTabGridLayout(doctorGrid);*/
+			List<Doctor> doctorList = testDbService.getDoctorList();
+			updateGrid(doctorGrid, doctorList);
+			break;
+			
+		default:
+			//do nothing
+		
+		}
+    }
+        
     private class CreateButtonClickListener implements Button.ClickListener
     {
 
@@ -197,7 +268,14 @@ public class MainUI extends UI {
 		}
     	
     }
-    
-    
+       
+    private class TabSheetGridUpdater implements TabSheet.SelectedTabChangeListener
+    {
+		@Override
+		public void selectedTabChange(SelectedTabChangeEvent event) {			
+			refreshCurrentTab();
+		}
+    	
+    }
 
 }

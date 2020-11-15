@@ -8,6 +8,16 @@ public class Doctor {
 	private String patronymic;
 	private String specialization;
 	
+	
+	public Doctor(long id, String firstName, String lastName, String patronymic, String specialization) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.patronymic = patronymic;
+		this.specialization = specialization;
+	}
+	
 	public long getId() {
 		return id;
 	}

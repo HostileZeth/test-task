@@ -14,6 +14,7 @@
         <!-- Technical requirement says it should be Vaadin 8 -->
         <vaadin.version>8.0.0</vaadin.version>
         <hsqldb.version>2.5.1</hsqldb.version>
+        <hibernate.version>5.4.0.Final</hibernate.version>
     </properties>
 
     <repositories>
@@ -72,7 +73,23 @@
 		    <groupId>org.hsqldb</groupId>
 		    <artifactId>hsqldb</artifactId>
 		    <version>${hsqldb.version}</version>
-		</dependency>		
+		</dependency>
+		<!-- JPA -->
+		<dependency>
+		    <groupId>javax.persistence</groupId>
+		    <artifactId>javax.persistence-api</artifactId>
+		    <version>2.2</version>
+		</dependency>
+		<dependency>
+		   <groupId>org.hibernate</groupId>
+		   <artifactId>hibernate-core</artifactId>
+		   <version>${hibernate.version}</version>
+		</dependency>
+		<dependency>
+		   <groupId>org.hibernate</groupId>
+		   <artifactId>hibernate-entitymanager</artifactId>
+		   <version>${hibernate.version}</version>
+		</dependency>
     </dependencies>
 
     <build>

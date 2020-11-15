@@ -13,8 +13,21 @@ public class Prescription {
 	
 	private String description;
 	private Date date;
-	private int duration;
+	private Date expirationDate;
 	
+	
+	
+	public Prescription(long id, Doctor doctor, Patient patient, String description, Date date, Date expirationDate,
+			Priority priority) {
+		this.id = id;
+		this.doctor = doctor;
+		this.patient = patient;
+		this.description = description;
+		this.date = date;
+		this.expirationDate = expirationDate;
+		this.priority = priority;
+	}
+
 	//@Enumerated(EnumType.STRING)
 	private Priority priority; 
 
@@ -58,12 +71,12 @@ public class Prescription {
 		this.date = date;
 	}
 
-	public int getDuration() {
-		return duration;
+	public Date getExpirationDate() {
+		return expirationDate;
 	}
 
-	public void setDuration(int duration) {
-		this.duration = duration;
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
 	}
 
 	public Priority getPriority() {
@@ -77,7 +90,7 @@ public class Prescription {
 	@Override
 	public String toString() {
 		return "Prescription [id=" + id + ", doctor=" + doctor + ", patient=" + patient + ", description=" + description
-				+ ", date=" + date + ", duration=" + duration + ", priority=" + priority + "]";
+				+ ", date=" + date + ", expirationDate=" + expirationDate + ", priority=" + priority + "]";
 	}
 	
 	

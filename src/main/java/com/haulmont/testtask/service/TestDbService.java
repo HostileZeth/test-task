@@ -1,14 +1,16 @@
 package com.haulmont.testtask.service;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
+import com.haulmont.testtask.dao.DoctorDao;
+import com.haulmont.testtask.dao.DoctorDaoJdbcImpl;
 import com.haulmont.testtask.dao.PatientDao;
+import com.haulmont.testtask.dao.PatientDaoJdbcImpl;
+import com.haulmont.testtask.dao.PrescriptionDao;
+import com.haulmont.testtask.dao.PrescriptionDaoJdbcImpl;
+import com.haulmont.testtask.entity.Doctor;
 import com.haulmont.testtask.entity.Patient;
+import com.haulmont.testtask.entity.Prescription;
 
 
 
@@ -18,21 +20,92 @@ public class TestDbService {
 	private String user = "sa";
 	private String password = "";
 	
-	private Connection getConnection() throws SQLException
+	private PatientDao patientDao;
+	private DoctorDao doctorDao;
+	private PrescriptionDao prescriptionDao;
+	
+	public TestDbService()
 	{
-		return DriverManager.getConnection(db, user, password);
-	}
-	
-	
+		patientDao = new PatientDaoJdbcImpl();
+		doctorDao = new DoctorDaoJdbcImpl();
+		prescriptionDao = new PrescriptionDaoJdbcImpl(doctorDao, patientDao);
+	}	
 	
 	public List<Patient> getPatientList()
 	{
-    	
-    	
-    	return PatientDao.getInstance().getPatientList();
+    	return patientDao.getPatientList();
+	}
+	
+	public Patient getPatient (long id)
+	{
+		try {
+			return patientDao.getPatient(id);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Db Service: failed to retrieve patient" + id);
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 
-	public void testDbAccess()
+	public List<Doctor> getDoctorList() {
+    	return doctorDao.getDoctorList();
+	}
+	
+	public Doctor getDoctor (long id)
+	{
+		try {
+			return doctorDao.getDoctor(id);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Db Service: failed to retrieve doctor " + id);
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public List<Prescription> getPrescriptionList() {
+		// TODO Auto-generated method stub
+		try {
+			return prescriptionDao.getPrescriptionList();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Db Service: failed to retrieve prescription list; Data integrity violated");
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public List<Prescription> getFilteredPrescriptionList(String filter) {
+		// TODO Auto-generated method stub
+		try {
+			return prescriptionDao.getFilteredPrescriptionList(filter);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Db Service: failed to retrieve prescription list; Data integrity violated");
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public Prescription getPrescription(long id) {
+		
+		try {
+			return prescriptionDao.getPrescription(id);
+		} catch (Exception e) {
+			System.out.println("DbService: Failed to retrieve prescription " + id);
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+
+	/*public void testDbAccess()
 	{
 		Connection conn = null;
 		//jdbc:hsqldb:D:\EclipseWorkspace\Haulmont test-task\test-task\local-db\access
@@ -73,6 +146,6 @@ public class TestDbService {
             }
         }
         
-	}
+	} */
 	
 }
