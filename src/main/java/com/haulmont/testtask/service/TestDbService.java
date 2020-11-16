@@ -1,5 +1,6 @@
 package com.haulmont.testtask.service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import com.haulmont.testtask.dao.DoctorDao;
@@ -16,57 +17,49 @@ import com.haulmont.testtask.entity.Prescription;
 
 public class TestDbService {
 	
-	private String db = "jdbc:hsqldb:file:local-db/access";
-	private String user = "sa";
-	private String password = "";
-	
 	private PatientDao patientDao;
 	private DoctorDao doctorDao;
 	private PrescriptionDao prescriptionDao;
 	
-	public TestDbService()
-	{
+	static TestDbService testDbService;
+	
+	public static TestDbService instanceOf() {
+		if (testDbService == null) testDbService = new TestDbService();
+		return testDbService;
+	}
+	
+	private TestDbService() {
 		patientDao = new PatientDaoJdbcImpl();
 		doctorDao = new DoctorDaoJdbcImpl();
 		prescriptionDao = new PrescriptionDaoJdbcImpl(doctorDao, patientDao);
 	}	
 	
-	public List<Patient> getPatientList()
-	{
+	public List<Patient> getPatientList() throws SQLException {
     	return patientDao.getPatientList();
 	}
 	
-	public Patient getPatient (long id)
-	{
-		try {
-			return patientDao.getPatient(id);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Db Service: failed to retrieve patient" + id);
-			e.printStackTrace();
-		}
-		
-		return null;
+	public Patient getPatient (long id) throws SQLException {
+		return patientDao.getPatient(id);
+	}
+	
+	public boolean deletePatient(long id) {
+		return patientDao.deletePatient(id);
 	}
 
-	public List<Doctor> getDoctorList() {
+	public List<Doctor> getDoctorList() throws SQLException {
     	return doctorDao.getDoctorList();
 	}
 	
-	public Doctor getDoctor (long id)
+	public Doctor getDoctor (long id) throws SQLException 
 	{
-		try {
 			return doctorDao.getDoctor(id);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Db Service: failed to retrieve doctor " + id);
-			e.printStackTrace();
-		}
-		
-		return null;
 	}
 
-	public List<Prescription> getPrescriptionList() {
+	public boolean deleteDoctor(long id) {
+		return doctorDao.deleteDoctor(id);
+	}
+
+	public List<Prescription> getPrescriptionList() throws SQLException {
 		// TODO Auto-generated method stub
 		try {
 			return prescriptionDao.getPrescriptionList();
@@ -79,73 +72,17 @@ public class TestDbService {
 		return null;
 	}
 	
-	public List<Prescription> getFilteredPrescriptionList(String filter) {
-		// TODO Auto-generated method stub
-		try {
-			return prescriptionDao.getFilteredPrescriptionList(filter);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Db Service: failed to retrieve prescription list; Data integrity violated");
-			e.printStackTrace();
-		}
-		
-		return null;
+	public List<Prescription> getFilteredPrescriptionList(String filter) throws SQLException {
+		return prescriptionDao.getFilteredPrescriptionList(filter);
 	}
 
-	public Prescription getPrescription(long id) {
-		
-		try {
-			return prescriptionDao.getPrescription(id);
-		} catch (Exception e) {
-			System.out.println("DbService: Failed to retrieve prescription " + id);
-			e.printStackTrace();
-		}
-		
-		return null;
+	public Prescription getPrescription(long id) throws SQLException {
+		return prescriptionDao.getPrescription(id);
 	}
 	
-
-	/*public void testDbAccess()
+	public boolean deletePrescription(long id)
 	{
-		Connection conn = null;
-		//jdbc:hsqldb:D:\EclipseWorkspace\Haulmont test-task\test-task\local-db\access
-		//it works
-        //String db = "jdbc:hsqldb:file:D:\\EclipseWorkspace\\Haulmont test-task\\test-task\\local-db\\access";
+		return prescriptionDao.deletePrescription(id);
+	}
 		
-                
-        try {
-            conn = getConnection();
-             
-            // Create and execute statement
-            Statement stmt = conn.createStatement();
-            ResultSet rs =  stmt.executeQuery("select FIRSTNAME, LASTNAME from CUSTOMER");
-            //ResultSet rs =  stmt.executeQuery("select FIRSTNAME, LASTNAME from PUBLIC.CUSTOMER");
-            //ResultSet rs =  stmt.executeQuery("select FIRSTNAME, LASTNAME from PUBLIC.PUBLIC.CUSTOMER");
-             
-            // Loop through the data and print all artist names
-            while(rs.next()) {
-                System.out.println("Customer Name: " + rs.getString("FIRSTNAME") + " " + rs.getString("LASTNAME"));
-            }
-             
-            // Clean up
-            rs.close();
-            stmt.close();
-        }
-        catch (SQLException e)
-        {
-        	System.err.println(e.getMessage());
-        }
-        finally {
-            try {
-                // Close connection
-                if (conn != null) 
-                    conn.close();
-            }
-            catch (SQLException e) {
-                System.err.println(e.getMessage());
-            }
-        }
-        
-	} */
-	
 }

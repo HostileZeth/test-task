@@ -1,21 +1,16 @@
 package com.haulmont.testtask.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-@Entity
-public class Patient {
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class Patient implements HasId {
+	
 	private long id;
+	
 	private String firstName;
 	private String lastName;
 	private String patronymic;
+	
 	private String phoneNumber;
 	
 	public Patient(long id, String firstName, String lastName, String patronymic, String phoneNumber) {
-		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;

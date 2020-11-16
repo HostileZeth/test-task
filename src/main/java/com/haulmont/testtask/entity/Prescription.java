@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.haulmont.testtask.entity.enumeration.Priority;
 
-public class Prescription {
+public class Prescription implements HasId {
 	
 	private long id;
 
@@ -28,7 +28,6 @@ public class Prescription {
 		this.priority = priority;
 	}
 
-	//@Enumerated(EnumType.STRING)
 	private Priority priority; 
 
 	public long getId() {

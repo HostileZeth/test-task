@@ -1,16 +1,16 @@
 package com.haulmont.testtask.entity;
 
-public class Doctor {
+public class Doctor implements HasId {
 	
 	private long id;
+	
 	private String firstName;
 	private String lastName;
 	private String patronymic;
+	
 	private String specialization;
 	
-	
 	public Doctor(long id, String firstName, String lastName, String patronymic, String specialization) {
-		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
