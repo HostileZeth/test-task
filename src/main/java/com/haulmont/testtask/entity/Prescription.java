@@ -15,11 +15,16 @@ public class Prescription implements HasId {
 	private Date date;
 	private Date expirationDate;
 	
-	
+	private Priority priority; 
 	
 	public Prescription(long id, Doctor doctor, Patient patient, String description, Date date, Date expirationDate,
 			Priority priority) {
+		this(doctor, patient, description, date, expirationDate, priority);
 		this.id = id;
+	}
+	
+	public Prescription(Doctor doctor, Patient patient, String description, Date date, Date expirationDate,
+			Priority priority) {
 		this.doctor = doctor;
 		this.patient = patient;
 		this.description = description;
@@ -27,8 +32,6 @@ public class Prescription implements HasId {
 		this.expirationDate = expirationDate;
 		this.priority = priority;
 	}
-
-	private Priority priority; 
 
 	public long getId() {
 		return id;

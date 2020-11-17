@@ -12,5 +12,9 @@ public interface PatientDao {
 	Patient getPatient(long id) throws SQLException;
 	
 	boolean deletePatient(long id);
+	
+	long savePatient(Patient patient) throws SQLException;
+
+	boolean updatePatient(Patient patient) throws SQLException;
 
 }

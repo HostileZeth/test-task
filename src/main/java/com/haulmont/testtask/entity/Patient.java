@@ -11,13 +11,17 @@ public class Patient implements HasId {
 	private String phoneNumber;
 	
 	public Patient(long id, String firstName, String lastName, String patronymic, String phoneNumber) {
+		this(firstName, lastName, patronymic, phoneNumber);
 		this.id = id;
+	}
+	
+	public Patient(String firstName, String lastName, String patronymic, String phoneNumber) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.patronymic = patronymic;
 		this.phoneNumber = phoneNumber;
 	}
-	
+
 	public long getId() {
 		return id;
 	}

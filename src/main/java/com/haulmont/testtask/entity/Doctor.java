@@ -11,7 +11,11 @@ public class Doctor implements HasId {
 	private String specialization;
 	
 	public Doctor(long id, String firstName, String lastName, String patronymic, String specialization) {
+		this(firstName, lastName, patronymic, specialization);
 		this.id = id;
+	}
+	
+	public Doctor(String firstName, String lastName, String patronymic, String specialization) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.patronymic = patronymic;
