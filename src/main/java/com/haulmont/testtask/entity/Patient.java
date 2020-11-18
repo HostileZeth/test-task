@@ -52,7 +52,6 @@ public class Patient implements HasId {
 	public void setPatronymic(String patronymic) {
 		this.patronymic = patronymic;
 	}
-	
 	@Override
 	public String toString() {
 		return "Patient [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", phoneNumber="
