@@ -16,5 +16,4 @@ public interface PatientDao {
 	long savePatient(Patient patient) throws SQLException;
 
 	boolean updatePatient(Patient patient) throws SQLException;
-
 }

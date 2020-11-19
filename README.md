@@ -1,19 +1,16 @@
-Test Task
+Test Task (completed)
 =========
 
-Prerequisites
+! Notes !
 -------------
 
-* [Java Development Kit (JDK) 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-* [Maven 3](https://maven.apache.org/download.cgi)
+I decided that technical requirements doc is more prevalent than project pom file, so Vaadin is switched from 7.6.7 to 8.0.0.
 
-Build and Run
+It caused some exceptions on startup, but then everything works good.
+
+! Additional folders !
 -------------
 
-1. Run in the command line:
-	```
-	mvn package
-	mvn jetty:run
-	```
+/local-db - contains local in-process db data
 
-2. Open `http://localhost:8080` in a web browser.
+/sql - contains sql for creating tables and filling them with sample data
