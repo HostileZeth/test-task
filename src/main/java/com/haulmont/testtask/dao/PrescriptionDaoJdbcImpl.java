@@ -36,7 +36,6 @@ public class PrescriptionDaoJdbcImpl implements PrescriptionDao {
 
 	@Override
 	public Prescription getPrescription(long id) throws SQLException {
-		
 		Connection conn = ConnectionFactory.getInstance().getConnection();
 		PreparedStatement preparedStatement = conn.prepareStatement("SELECT id, doctor_id, patient_id, description, date, expiration_date, priority FROM prescription WHERE id = ?");
     	preparedStatement.setLong(1, id);
@@ -106,40 +105,6 @@ public class PrescriptionDaoJdbcImpl implements PrescriptionDao {
 		else 
 			return false;
 	}
-	
-	private List<Prescription> getResultingPrescriptionList(PreparedStatement preparedStatement) throws SQLException {
-		ArrayList<Prescription> resultList = new ArrayList<>();
-		try {
-			ResultSet resultSet = preparedStatement.executeQuery();
-			
-			while (resultSet.next()) {
-				System.out.println("READING " + resultSet.getLong("doctor_id") + resultSet.getLong("patient_id"));
-				try {
-					resultList.add(createPrescription(resultSet));
-				}
-				catch (SQLException e) {
-					System.out.println("Failed to fetch data for Prescription; Data integrity failed");
-					throw new SQLException("Failed to fetch data for Prescription; Data integrity failed");
-				}
-			}
-			
-		} catch (SQLException e) {
-			throw e;
-		}
-		
-		return resultList;
-	}
-	
-	private Prescription createPrescription(ResultSet resultSet) throws SQLException {
-		
-		Doctor thisDoctor = doctorDao.getDoctor(resultSet.getLong("doctor_id"));
-		Patient thisPatient = patientDao.getPatient(resultSet.getLong("patient_id"));
-		Prescription prescription = new Prescription(resultSet.getLong("id"), thisDoctor, thisPatient, 
-				resultSet.getString("description"), resultSet.getDate("date"), resultSet.getDate("expiration_date"), 
-				Priority.valueOf(resultSet.getString("priority")));
-		
-		return prescription;
-	}
 
 	@Override
 	public boolean updatePrescription(Prescription prescription) throws SQLException {
@@ -200,5 +165,38 @@ public class PrescriptionDaoJdbcImpl implements PrescriptionDao {
 		else {
             throw new SQLException("Saving prescription failed, no ID obtained.");
         }
+	}
+	
+	private List<Prescription> getResultingPrescriptionList(PreparedStatement preparedStatement) throws SQLException {
+		ArrayList<Prescription> resultList = new ArrayList<>();
+		try {
+			ResultSet resultSet = preparedStatement.executeQuery();
+			
+			while (resultSet.next()) {
+				System.out.println("READING " + resultSet.getLong("doctor_id") + resultSet.getLong("patient_id"));
+				try {
+					resultList.add(createPrescription(resultSet));
+				}
+				catch (SQLException e) {
+					System.out.println("Failed to fetch data for Prescription; Data integrity failed");
+					throw new SQLException("Failed to fetch data for Prescription; Data integrity failed");
+				}
+			}
+			
+		} catch (SQLException e) {
+			throw e;
+		}
+		
+		return resultList;
+	}
+	
+	private Prescription createPrescription(ResultSet resultSet) throws SQLException {
+		Doctor thisDoctor = doctorDao.getDoctor(resultSet.getLong("doctor_id"));
+		Patient thisPatient = patientDao.getPatient(resultSet.getLong("patient_id"));
+		Prescription prescription = new Prescription(resultSet.getLong("id"), thisDoctor, thisPatient, 
+				resultSet.getString("description"), resultSet.getDate("date"), resultSet.getDate("expiration_date"), 
+				Priority.valueOf(resultSet.getString("priority")));
+		
+		return prescription;
 	}
 }
