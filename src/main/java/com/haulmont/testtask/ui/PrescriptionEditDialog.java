@@ -155,6 +155,12 @@ public class PrescriptionEditDialog extends AbstractEditDialog {
 				showErrorMessage("Введите срок рецепта в формате ДД-ММ-ГГГГ");
 				return;
 			}
+			
+			if (prescriptionDateValue.compareTo(expirationDateValue) > 0) {
+				showErrorMessage("Срок действия рецепта не может быть раньше, чем дата");
+				return;
+			}
+			
 			if (prescription == null) {
 				prescription = new Prescription(requiredDoctor, requiredPatient, description.getValue(), prescriptionDateValue, expirationDateValue, priorityComboBox.getValue());
 				receivedId = testDbService.savePrescription(prescription);
